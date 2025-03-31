@@ -18,7 +18,7 @@ Op deze servers moet Proxmox geinstalleerd worden, een cluster gemaakt worden en
 
 De volgende stappen zijn uitgevoerd:  
 
-| Stap | Gedane actie                                                                |
+| Stap | Beschrijving                                                                |
 |------|-----------------------------------------------------------------------------|
 | 1    | Installeer Proxmox op 3 VM’s (elk met eigen naam + IP)                      |
 | 2    | Update pakketten + stel repo in via SSH                                     |
@@ -26,11 +26,21 @@ De volgende stappen zijn uitgevoerd:
 | 4    | Installeer **Ceph** voor gedeelde opslag                                    |
 | 5    | Gereed voor de rest van de cloud opdracht                                   |
 
-Deze stappen zijn in de les uitgevoerd zodat het mogelijk is verder te gaan met de 'echte' opdrachten.
-Vandaar dat ik geen tussenstappen inzichtelijk heb gemaakt.
-Hierbij de screesnhot met het eindresultaat:
+
+Hierbij een screenshot van het monitoren:
 
 ![alt text](.\Screenshots\VoorbereidendeOpdracht\WerkendClusterEnCeph.png)
+
+Hierbij een screenshot van de ingestelde partities:
+
+|Partitie |	Grootte |	Beschrijving                       |
+|---------|---------|--------------------------------------|
+|/dev/sda1|	1 MB	|BIOS boot (voor het opstarten)        |
+|/dev/sda2|	1 GB	|EFI (voor UEFI boot systemen)         |
+|/dev/sda3|	106 GB	|LVM – hierop is Proxmox geïnstalleerd |
+|/dev/sda4|	215 GB	|Voor Ceph OSD gebruikt                |
+
+![alt text](.\Screenshots\VoorbereidendeOpdracht\InzagePartities.png)
 
 Het cluster is nu gereed voor gebruik.
 
