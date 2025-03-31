@@ -7,7 +7,7 @@ SSHPORT=6123
 PASSWORD_HASH=$(openssl passwd -6 "beheerderwachtwoord")
 NTP_SERVICE="systemd-timesyncd"
 
-# Script
+# Script *
 echo " Update en upgrade APT"
 apt update && apt upgrade -y
 

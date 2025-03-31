@@ -27,11 +27,17 @@ De volgende stappen zijn uitgevoerd:
 | 5    | Cluster gereed voor verdere opdrachten (HA en applicaties)|
 
 
+### Proxmox netwerk instellingen
 
+|nodenaam|IP           |Type node    |
+|--------|-------------|-------------|
+|pve00   |10.24.13.100 |control node|
+|pve01   |10.24.13.101 |managed node|
+|pve02   |10.24.13.102 |managed node|
 
 ---
 
-### Partitie instellingen
+### Partitie instellingen per node
 
 
 |Partitie |	Grootte |	Beschrijving                       |
