@@ -27,6 +27,19 @@ sudo pct create $CTID $TEMPLATE \
 sudo pct start $CTID
 sleep 5
 
+# === 2.1 Tailscale installeren en verbinden ===
+TAILSCALE_AUTH_KEY="tskey-abc123..."  # <<< Vervang dit met jouw eigen auth key
+
+echo "🌐 Tailscale installeren en verbinden op container $CTID"
+
+sudo pct exec $CTID -- bash -c "curl -fsSL https://tailscale.com/install.sh | sh"
+sudo pct exec $CTID -- bash -c "tailscale up --authkey=${TAILSCALE_AUTH_KEY} --hostname=${HOSTNAME}"
+
+# Optioneel: IP tonen
+TAILSCALE_IP=$(sudo pct exec $CTID -- tailscale ip | head -n 1)
+echo "✅ Tailscale IP van container $CTID: $TAILSCALE_IP"
+
+
 # === 3. DNS fix voor Tailgate (resolv.conf workaround) ===
 echo "nameserver 1.1.1.1" | sudo tee /etc/resolv.custom.conf > /dev/null
 sudo pct exec $CTID -- bash -c "echo 'nameserver 1.1.1.1' > /etc/resolv.conf"
