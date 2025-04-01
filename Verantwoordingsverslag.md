@@ -249,6 +249,31 @@ apt install apache2 mariadb-server php php-mysql libapache2-mod-php php-cli php-
 Apache test:
 ![alt text](Screenshots\Opdracht1\Apachewerkend.png)
 
+3) MariaDB aanmaken:
+
+```bash
+mysql_secure_installation
+mysql -u root
+```
+
+```sql
+CREATE DATABASE wordpress;
+CREATE USER 'wpuser'@'localhost' IDENTIFIED BY 'wppass';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+Aanmaken Database:
+![alt text](Screenshots\Opdracht1\MariaDBwerkend.png)
+
+Controleren of databse en user ingesteld zijn (database wordpress, user wpuser):
+![alt text](Screenshots\Opdracht1\MariaDBenuser.png)
+
+
+4) Wordpress installeren
+
+
 
 ### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:
 
