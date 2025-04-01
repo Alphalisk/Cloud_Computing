@@ -30,11 +30,11 @@ echo "nameserver 1.1.1.1" | sudo tee /etc/resolv.custom.conf > /dev/null
 sudo pct exec $CTID -- bash -c "echo 'nameserver 1.1.1.1' > /etc/resolv.conf"
 
 # === 4. Software installeren ===
-pct exec $CTID -- bash -c "apt update && apt upgrade -y"
-pct exec $CTID -- bash -c "apt install -y apache2 mariadb-server php php-mysql libapache2-mod-php php-cli php-curl php-gd php-xml php-mbstring unzip wget"
+sudo pct exec $CTID -- bash -c "apt update && apt upgrade -y"
+sudo pct exec $CTID -- bash -c "apt install -y apache2 mariadb-server php php-mysql libapache2-mod-php php-cli php-curl php-gd php-xml php-mbstring unzip wget"
 
 # === 5. MariaDB configureren ===
-pct exec $CTID -- bash -c "mysql -u root <<EOF
+sudo pct exec $CTID -- bash -c "mysql -u root <<EOF
 CREATE DATABASE wordpress;
 CREATE USER 'wpuser'@'localhost' IDENTIFIED BY 'wppass';
 GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'localhost';
@@ -42,13 +42,13 @@ FLUSH PRIVILEGES;
 EOF"
 
 # === 6. WordPress downloaden en installeren ===
-pct exec $CTID -- bash -c "cd /tmp && wget https://wordpress.org/latest.tar.gz"
-pct exec $CTID -- bash -c "cd /tmp && tar -xvzf latest.tar.gz"
-pct exec $CTID -- bash -c "mv /tmp/wordpress /var/www/html/wordpress"
-pct exec $CTID -- bash -c "chown -R www-data:www-data /var/www/html/wordpress && chmod -R 755 /var/www/html/wordpress"
+sudo pct exec $CTID -- bash -c "cd /tmp && wget https://wordpress.org/latest.tar.gz"
+sudo pct exec $CTID -- bash -c "cd /tmp && tar -xvzf latest.tar.gz"
+sudo pct exec $CTID -- bash -c "mv /tmp/wordpress /var/www/html/wordpress"
+sudo pct exec $CTID -- bash -c "chown -R www-data:www-data /var/www/html/wordpress && chmod -R 755 /var/www/html/wordpress"
 
 # === 7. Apache config aanmaken ===
-pct exec $CTID -- bash -c "cat > /etc/apache2/sites-available/wordpress.conf <<EOL
+sudo pct exec $CTID -- bash -c "cat > /etc/apache2/sites-available/wordpress.conf <<EOL
 <VirtualHost *:80>
     ServerAdmin admin@localhost
     DocumentRoot /var/www/html/wordpress
@@ -65,6 +65,10 @@ pct exec $CTID -- bash -c "cat > /etc/apache2/sites-available/wordpress.conf <<E
 EOL"
 
 # === 8. Apache activeren ===
-pct exec $CTID -- bash -c "a2ensite wordpress.conf && a2enmod rewrite && systemctl reload apache2"
+sudo pct exec $CTID -- bash -c "a2ensite wordpress.conf && a2enmod rewrite && systemctl reload apache2"
+
+# === 9. Curl test ===
+echo " Curl test vanaf host naar http://${IP}/wordpress"
+curl -s -o /dev/null -w "📡 HTTP status: %{http_code}\n" http://${IP}/wordpress # Dit moet 200 of 301 zijn.
 
 echo "✅ Container $CTID klaar! Bezoek: http://${IP}/wordpress"
