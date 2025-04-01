@@ -298,6 +298,29 @@ sudo systemctl reload apache2
 De website heeft een ping, en geeft een standaard website als response.
 ![alt text](Screenshots\Opdracht1\WordpressPingEnCurl.png)
 
+# Firewall instellen
+
+```bash
+beheerder@pve01:~$ echo $CTID
+111
+beheerder@pve01:~$ sudo pct exec $CTID -- bash -c "ufw default deny incoming"
+Default incoming policy changed to 'deny'
+(be sure to update your rules accordingly)
+beheerder@pve01:~$ sudo pct exec $CTID -- bash -c "ufw allow 80/tcp comment 'Allow HTTP'"
+Rules updated
+Rules updated (v6)
+beheerder@pve01:~$ sudo pct exec $CTID -- bash -c "ufw allow 443/tcp comment 'Allow HTTPS'"
+Rules updated
+Rules updated (v6)
+beheerder@pve01:~$ sudo pct exec $CTID -- bash -c "ufw allow out to any"
+Rules updated
+Rules updated (v6)
+beheerder@pve01:~$ sudo pct exec $CTID -- bash -c "yes | ufw enable"
+Firewall is active and enabled on system startup
+yes: standard output: Broken pipe
+beheerder@pve01:~$ 
+```
+
 ### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:
 
 ## Verantwoording Opdracht 1: Klant 2

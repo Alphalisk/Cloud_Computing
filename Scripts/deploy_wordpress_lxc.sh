@@ -33,6 +33,17 @@ sudo pct exec $CTID -- bash -c "echo 'nameserver 1.1.1.1' > /etc/resolv.conf"
 sudo pct exec $CTID -- bash -c "apt update && apt upgrade -y"
 sudo pct exec $CTID -- bash -c "apt install -y apache2 mariadb-server php php-mysql libapache2-mod-php php-cli php-curl php-gd php-xml php-mbstring unzip wget"
 
+# === 4.5 Firewall instellen ===
+echo "🛡️  Firewall (UFW) instellen op container $CTID"
+
+sudo pct exec $CTID -- bash -c "apt install -y ufw"
+sudo pct exec $CTID -- bash -c "ufw default deny incoming"
+sudo pct exec $CTID -- bash -c "ufw allow 80/tcp comment 'Allow HTTP'"
+sudo pct exec $CTID -- bash -c "ufw allow 443/tcp comment 'Allow HTTPS'"
+sudo pct exec $CTID -- bash -c "ufw allow out to any"
+sudo pct exec $CTID -- bash -c "yes | ufw enable"
+
+
 # === 5. MariaDB configureren ===
 sudo pct exec $CTID -- bash -c "mysql -u root <<EOF
 CREATE DATABASE wordpress;
