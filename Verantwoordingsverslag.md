@@ -197,7 +197,52 @@ Op de managed node stel ik de firewall voor container CT 101 in:
 
 ![alt text](Screenshots\Opdracht1\FirewallInstellen.png)
 
+### Stap 4: Testen of het werkt
 
+Hierbij start de container:
+
+```bash
+beheerder@pve01:~$ sudo pct start 101
+beheerder@pve01:~$ sudo pct exec 101 -- bash
+root@wp1:/# 
+```
+
+![alt text](Screenshots\Opdracht1\ContainerStarten.png)
+
+### Stap 5: Wordpress installeren
+
+Op de container moeten nu de applicatie Wordpress geinstalleerd worden.
+Daarbij kwam het probleem dat het niet mogelijk was om online te komen met sudo apt update.
+Er waren 2 fouten.
+De tailgate DNS 100.100.100.100 werd gebruikt -> die is omgezet naar 1.1.1.1
+net0 was verkeerd ingesteld.
+
+```conf
+arch: amd64
+cores: 1
+hostname: wp1
+memory: 1024
+net0: name=eth0,bridge=vmbr0,ip=10.24.13.101/24,gw=10.24.13.1,rate=50
+ostype: ubuntu
+rootfs: local-lvm:vm-101-disk-0,size=30G
+swap: 512
+unprivileged: 1
+```
+
+#### Installatie stappen: 
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+```
+
+![alt text](Screenshots\Opdracht1\CTupdate&upgrade.png)
+
+Installeren van Wordpress:
+
+```bash
+apt install apache2 mariadb-server php php-mysql libapache2-mod-php php-cli php-curl php-gd php-xml php-mbstring unzip wget -y
+```
 
 ### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:
 
