@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # === Instellingen ===
-CTID=$1                       # Bijv. 102
+CTID=$1                       # Bijv. 111
 HOSTNAME="wp${CTID}"
 IP="10.24.13.${CTID}"
 GW="10.24.13.1"
 TEMPLATE="local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
 STORAGE="local-lvm"
+USERNAME="wpadmin"
+PUBKEY_PATH="/home/beheerder/.ssh/id_rsa.pub" 
 
 echo "📦 Container $CTID aanmaken op IP $IP"
 
@@ -40,7 +42,6 @@ sudo pct exec $CTID -- bash -c "systemctl enable ssh && systemctl start ssh"
 
 # === 4.5 Firewall instellen ===
 echo "🛡️  Firewall (UFW) instellen op container $CTID"
-
 sudo pct exec $CTID -- bash -c "apt install -y ufw"
 sudo pct exec $CTID -- bash -c "ufw default deny incoming"
 sudo pct exec $CTID -- bash -c "ufw allow 22/tcp comment 'Allow SSH'"
@@ -50,24 +51,19 @@ sudo pct exec $CTID -- bash -c "ufw allow out to any"
 sudo pct exec $CTID -- bash -c "yes | ufw enable"
 
 # === 4.6 SSH gebruiker + key instellen ===
-USERNAME="wpadmin"
-PUBKEY_PATH="/root/.ssh/id_rsa.pub"
-
 echo "🔑 Gebruiker '$USERNAME' aanmaken en SSH key toevoegen aan container $CTID"
 
-# 1. Maak gebruiker aan
 sudo pct exec $CTID -- adduser --disabled-password --gecos "" $USERNAME
-
-# 2. Maak .ssh dir aan
 sudo pct exec $CTID -- mkdir -p /home/$USERNAME/.ssh
-
-# 3. Push public key vanaf host naar container
-sudo pct push $CTID $PUBKEY_PATH /home/$USERNAME/.ssh/authorized_keys
-
-# 4. Zet juiste permissies
+sudo bash -c "cat $PUBKEY_PATH | pct exec $CTID -- tee /home/$USERNAME/.ssh/authorized_keys > /dev/null"
 sudo pct exec $CTID -- chown -R $USERNAME:$USERNAME /home/$USERNAME/.ssh
 sudo pct exec $CTID -- chmod 700 /home/$USERNAME/.ssh
 sudo pct exec $CTID -- chmod 600 /home/$USERNAME/.ssh/authorized_keys
+
+# ✅ SSH configuratie forceren
+sudo pct exec $CTID -- sed -i 's/^#*PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+sudo pct exec $CTID -- sed -i 's/^#*AuthorizedKeysFile.*/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
+sudo pct exec $CTID -- systemctl restart ssh
 
 
 # === 5. MariaDB configureren ===
