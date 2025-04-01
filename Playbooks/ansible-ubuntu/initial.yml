@@ -31,15 +31,15 @@
         name: "*"
         state: latest
 
-# Task 3:
-# This task ensures that the NTP daemon is running. This is especially
-# important when you want to make sure that the hosts that will power
-# your distributed application are in sync - time-wise.
-    - name: Make sure NTP service is running
-      ansible.builtin.systemd:
-        state: started
-        name: systemd-timesyncd
-      ignore_errors: yes
+# # Task 3:
+# # This task ensures that the NTP daemon is running. This is especially
+# # important when you want to make sure that the hosts that will power
+# # your distributed application are in sync - time-wise.
+#     - name: Make sure NTP service is running
+#       ansible.builtin.systemd:
+#         state: started
+#         name: systemd-timesyncd
+#       ignore_errors: yes
 
 # Task 4:
 # This task verifies that a sudo group exists on the hosts. We know this
@@ -71,28 +71,28 @@
         state: present
         key: "{{ copy_local_key }}"
 
-# Task 7:
-# Here we look for a line that starts with the regexp in the SSH daemon's
-# configuration file and change its value to "no". We do this so that
-# any attempt to log in using the root account after running this playbook
-# will fail.
-    - name: Disable remote login for root
-      ansible.builtin.lineinfile:
-        path: /etc/ssh/sshd_config
-        state: present
-        regexp: '^PermitRootLogin yes'
-        line: 'PermitRootLogin no'
+# # Task 7:
+# # Here we look for a line that starts with the regexp in the SSH daemon's
+# # configuration file and change its value to "no". We do this so that
+# # any attempt to log in using the root account after running this playbook
+# # will fail.
+#     - name: Disable remote login for root
+#       ansible.builtin.lineinfile:
+#         path: /etc/ssh/sshd_config
+#         state: present
+#         regexp: '^PermitRootLogin yes'
+#         line: 'PermitRootLogin no'
 
-# Task 8:
-# Here we look for a line that starts with the regexp in the SSH daemon's
-# configuration file and change its value to a higher port number that's not in use by another application.
-# We do this to reduce the number of automated attacks hitting the SSH server, thereby improving it's security posture.
-    - name: Change the SSH port
-      ansible.builtin.lineinfile:
-        path: /etc/ssh/sshd_config
-        state: present
-        regexp: '^#Port 22'
-        line: 'Port "{{ ssh_port }}"'
+# # Task 8:
+# # Here we look for a line that starts with the regexp in the SSH daemon's
+# # configuration file and change its value to a higher port number that's not in use by another application.
+# # We do this to reduce the number of automated attacks hitting the SSH server, thereby improving it's security posture.
+#     - name: Change the SSH port
+#       ansible.builtin.lineinfile:
+#         path: /etc/ssh/sshd_config
+#         state: present
+#         regexp: '^#Port 22'
+#         line: 'Port "{{ ssh_port }}"'
 
 # Task 8.1
     - name: Install UFW
@@ -109,28 +109,28 @@
         rule: allow
         port: "{{ ssh_port }}"
 
-# Task 10:
-# This task will then deny all other traffic access to the hosts and enable UFW.
-    - name: Brute-force attempt protection for SSH
-      community.general.ufw:
-        rule: limit
-        port: "{{ ssh_port }}"
-        proto: tcp
+# # Task 10:
+# # This task will then deny all other traffic access to the hosts and enable UFW.
+#     - name: Brute-force attempt protection for SSH
+#       community.general.ufw:
+#         rule: limit
+#         port: "{{ ssh_port }}"
+#         proto: tcp
 
-# Task 11:
-# This task will then deny all other traffic access to the hosts and enable UFW.
-    - name: UFW - Deny other incoming traffic and enable UFW
-      community.general.ufw:
-        state: enabled
-        policy: deny
-        direction: incoming
+# # Task 11:
+# # This task will then deny all other traffic access to the hosts and enable UFW.
+#     - name: UFW - Deny other incoming traffic and enable UFW
+#       community.general.ufw:
+#         state: enabled
+#         policy: deny
+#         direction: incoming
 
-# Task 12:
-# This tasks removes package dependencies that are no longer required, the
-# equivalent of running the `sudo apt autoremove` command.
-    - name: Remove dependencies that are no longer required
-      ansible.builtin.apt:
-        autoremove: yes
+# # Task 12:
+# # This tasks removes package dependencies that are no longer required, the
+# # equivalent of running the `sudo apt autoremove` command.
+#     - name: Remove dependencies that are no longer required
+#       ansible.builtin.apt:
+#         autoremove: yes
 
 # Task 13:
 # Since the SSH daemon's configuration file was modified, this task will apply

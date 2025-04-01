@@ -32,15 +32,15 @@
         name: "*"
         state: latest
 
-# Task 3:
-# This task ensures that the NTP daemon is running. This is especially
-# important when you want to make sure that the hosts that will power
-# your distributed application are in sync - time-wise.
-    - name: Make sure NTP service is running
-      ansible.builtin.systemd:
-        state: started
-        name: systemd-timesyncd
-      ignore_errors: yes
+# # Task 3:
+# # This task ensures that the NTP daemon is running. This is especially
+# # important when you want to make sure that the hosts that will power
+# # your distributed application are in sync - time-wise.
+#     - name: Make sure NTP service is running
+#       ansible.builtin.systemd:
+#         state: started
+#         name: systemd-timesyncd
+#       ignore_errors: yes
 
 # Task 4:
 # This task uses the command module to check the status of UFW and capture the
@@ -56,12 +56,12 @@
         state: enabled
       when: "'inactive' in ufw_status.stdout"
 
-# Task 6:
-# This tasks removes package dependencies that are no longer required, the
-# equivalent of running the `sudo apt autoremove` command.
-    - name: Remove dependencies that are no longer required
-      ansible.builtin.apt:
-        autoremove: yes
+# # Task 6:
+# # This tasks removes package dependencies that are no longer required, the
+# # equivalent of running the `sudo apt autoremove` command.
+#     - name: Remove dependencies that are no longer required
+#       ansible.builtin.apt:
+#         autoremove: yes
 
 # Task 7:
 # By calling the stat module, which is used to gather info about a file, this task checks if a
