@@ -290,8 +290,13 @@ sudo chmod -R 755 /var/www/html/wordpress
 
 # Apache configureren
 sudo nano /etc/apache2/sites-available/wordpress.conf
-
+sudo a2ensite wordpress.conf
+sudo a2enmod rewrite
+sudo systemctl reload apache2
 ```
+
+De website heeft een ping, en geeft een standaard website als response.
+![alt text](Screenshots\Opdracht1\WordpressPingEnCurl.png)
 
 ### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:
 
