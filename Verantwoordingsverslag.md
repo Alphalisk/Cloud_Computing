@@ -137,10 +137,69 @@ Op dit moment is het cluster volledig operationeel, voorzien van:
 
 ## Verantwoording Opdracht 1: Klant 1
 
+### Opdracht:
+**Klant 1: WordPress voor trainingsdoeleinden**  
+De eerste klant wil verschillende WordPress-websites afnemen voor trainingsdoeleinden.
+De focus ligt op het zo goedkoop mogelijk aanbieden van deze websites.
+Hierop is de klant aangeboden dat de applicaties in container (LXC) wordt aangeboden.
+
+### Fase 1, Rechtstreeks met CLI en Bash een container maken:
+
+#### stap 1: download de container template (LXC)
+Een LXC container wordt niet opgebouwd vanuit een ISO zoals een VM, maar vanuit een root filesystem (.tar.zst). 
+
+```bash
+root@pve00:~# pveam update && pveam available
+root@pve00:~# pveam available | grep ubuntu-22.04
+system          ubuntu-22.04-standard_22.04-1_amd64.tar.zst
+root@pve00:~# pveam download local ubuntu-22.04-standard_22.04-1_amd64.tar.zst
+```
+
+![alt text](Screenshots\Opdracht1\TemplateDownloaden.png)
+
+![alt text](Screenshots\Opdracht1\TemplateDownloaden2.png)
+
+#### Stap 2: Maak een enkele container aan.
+
+De container heeft volgens de beoordelingsmatrix de volgende eisen:
+
+| Eigenschap       | Waarde                        |
+|------------------|-------------------------------|
+| CPU              | 1 core                        |
+| RAM              | 1024 MB (1 GB)                |
+| Disk             | 30 GB                         |
+| Network limit    | 50 MB/s                       |
+| Poorten open     | 80 (HTTP), 443 (HTTPS)        |
+| Firewall         | Alleen toegang tot webdiensten|
+
+De gebruikte Bash code om dit aan te maken,
+Dit is gedaan vanuit control unit pve00 met ssh naar managed unit pve01:
+
+```bash
+root@pve00:~# ssh -p 6123 beheerder@pve01 'sudo pct create 101 local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst \
+  --hostname wp1 \
+  --cores 1 \
+  --memory 1024 \
+  --rootfs local-lvm:30 \
+  --net0 name=eth0,bridge=vmbr0,rate=50 \
+  --ostype ubuntu \
+  --password wordpress \
+  --unprivileged 1'
+```
+
+Screenshot:
+
+![alt text](Screenshots\Opdracht1\ContainerCLI.png)
+
+### Stap 3: Firewall instellen
+
+Op de managed node stel ik de firewall voor container CT 101 in:
+
+![alt text](Screenshots\Opdracht1\FirewallInstellen.png)
 
 
 
-
+### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:
 
 ## Verantwoording Opdracht 1: Klant 2
 
