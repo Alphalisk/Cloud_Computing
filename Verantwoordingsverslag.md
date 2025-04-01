@@ -7,9 +7,10 @@ In dit verslag verantwoord ik mijn werkzaamheden binnen het vak **Cloud Computin
 ## Opdrachten van het project
 
 De werkzaamheden van de project:
-- De cloud omgeving online opzetten: Voorbereidende opdracht.
-- Cloudopdracht 1: Proxmox uit werken
-- Cloudopdracht 2: Docker uit werken
+- De Cloud omgeving online opzetten: Voorbereidende opdracht.
+- Cloudopdracht 1, klant 1
+- Cloudopdracht 1, klant 2
+- Cloudopdracht 2
 
 ## Verantwoording voorbereidende opdracht
 
@@ -23,17 +24,17 @@ De volgende stappen zijn uitgevoerd:
 | 1    | Proxmox geïnstalleerd op 3 VM’s (elk met eigen naam + IP) |
 | 2    | Pakketten geüpdatet + juiste repositories ingesteld       |
 | 3    | Cluster aangemaakt met `pvecm`                            |
-| 4    | Ceph geïnstalleerd voor gedeelde opslag (shared storage) |
-| 5    | Cluster gereed voor verdere opdrachten (HA en applicaties)|
+| 4    | Ceph geïnstalleerd voor gedeelde opslag (shared storage)  |
+| 5    | Cluster gereed voor verdere opdrachten                    |
 
 
 ### Proxmox netwerk instellingen
 
-|nodenaam|IP           |Type node    |
-|--------|-------------|-------------|
-|pve00   |10.24.13.100 |control node|
-|pve01   |10.24.13.101 |managed node|
-|pve02   |10.24.13.102 |managed node|
+|nodenaam|IP intern    |Type node    |IP Tailscale  |
+|--------|-------------|-------------|--------------|
+|pve00   |10.24.13.100 |control node |100.94.185.45 |
+|pve01   |10.24.13.101 |managed node |100.104.126.78|
+|pve02   |10.24.13.102 |managed node |100.84.145.8  |
 
 ---
 
@@ -53,6 +54,27 @@ Hierbij een screenshot van de ingestelde partities:
 
 ---
 
+### SSH Certificaat
+
+Om er voor te zorgen dat het mogelijk is meerdere nodes te beheren vanuit een control node, Is het de bedoeling om te kunnen inloggen zonder wachtwoord.  
+Daarvoor in de plaats wordt er ingelogd met certificaten en sleutels.
+
+Stap 1: Remote Laptop met certificaat via root koppelen aan control unit:  
+```bash
+ssh-keygen
+ssh-copy-id root@100.94.185.45
+```
+
+Stap 2: Control unit met certificaat via beheerder koppelen aan managed units:  
+```bash
+adduser bob # (op alle nodes)
+usermod -aG sudo bob # om beheerder te maken, dit op alle nodes. Later via playbook automatisch.
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_bob # Op de control node. Hier komt de private key en de te verdelen public key.
+ssh-copy-id bob@10.24.13.101 # Kopieren van public key naar andere servers
+ssh-copy-id bob@10.24.13.102 # Kopieren van public key naar andere servers
+```
+
+
 ### Ansible playbooks (orchestration)
 
 Op node pve00 is Ansible geïnstalleerd als **control node**. De nodes pve01 en pve02 fungeren als **managed nodes**.
@@ -63,6 +85,7 @@ De playbooks bevinden zich in de map `/Playbooks/ansible-ubuntu/`
 - `initial.yml` – eenmalige setup van gebruikers en SSH
 - `ongoing.yml` – voor updates en onderhoudstaken  
 
+> Met `initial.yml` wordt root op de managed units uitgeschakeld! Vanaf nu kan alleen nog maar worden ingelogd met de beheerder account!  
 
 In de map `/vars/` is `default.yml` aanwezig met de volgende variabelen:
 
@@ -72,7 +95,8 @@ ssh_port: 6123
 copy_local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 ```
 
-> Hiermee wordt de gebruiker `beheerder` met sudo-rechten aangemaakt op alle nodes, wordt poort 6123 gebruikt voor SSH en wordt authenticatie geregeld via sleutels (geen wachtwoorden). 
+> Hiermee wordt de gebruiker `beheerder` met sudo-rechten aangemaakt op alle nodes, wordt poort 6123 gebruikt voor SSH en wordt authenticatie geregeld via sleutels (geen wachtwoorden).
+
 
 #### Updates via Ansible
 
@@ -110,19 +134,18 @@ Op dit moment is het cluster volledig operationeel, voorzien van:
 - Werkende HA-configuratie
 - Updates en beheer via Ansible
 
-De omgeving is gereed voor verdere opdrachten (zoals het uitrollen van applicaties met WordPress en Docker).
 
-### Afsluiting
-
-Deze voorbereidende stappen vormen de technische basis voor het verdere cloudproject. In het volgende deel worden de applicaties voor Klant 1 en Klant 2 uitgerold met focus op LXC, VM’s en automatisering met Ansible.
-
----
+## Verantwoording Opdracht 1: Klant 1
 
 
-## Verantwoording Opdracht 1: Proxmox
+
+
+
+
+## Verantwoording Opdracht 1: Klant 2
+
 
 ## Verantwoording Opdracht 2: Docker
-
 
 *Gemaakt door: Richard Mank*  
 *Studentnummer: [12345678]*  
