@@ -364,6 +364,12 @@ sudo pct exec $CTID -- chmod 700 /home/$USERNAME/.ssh
 sudo pct exec $CTID -- chmod 600 /home/$USERNAME/.ssh/authorized_keys
 ```
 
+### Uitval server
+
+Op 1 april 2025 was OSD.1 op node pve01 tijdelijk uitgevallen (autoout). Hierdoor gaf Ceph de status HEALTH_WARN. De fout werd veroorzaakt doordat de OSD zichzelf had uitgeschakeld na het verliezen van netwerkbinding (set_numa_affinity unable to identify public interface).
+Na het uitvoeren van systemctl start ceph-osd@1 is de OSD weer gestart en toont het cluster nu de status HEALTH_OK.
+Hiermee is aangetoond dat de fouttolerantie van Ceph correct werkt en dat het cluster zichzelf herstelt zodra een OSD weer beschikbaar is.
+
 ### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:
 
 Alle bovenstaande commando's zijn samengevoegd in een script.  
