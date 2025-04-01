@@ -11,7 +11,7 @@ STORAGE="local-lvm"
 echo "📦 Container $CTID aanmaken op IP $IP"
 
 # === 1. Container aanmaken ===
-pct create $CTID $TEMPLATE \
+sudo pct create $CTID $TEMPLATE \
   --hostname $HOSTNAME \
   --cores 1 \
   --memory 1024 \
@@ -22,12 +22,12 @@ pct create $CTID $TEMPLATE \
   --unprivileged 1
 
 # === 2. Container starten ===
-pct start $CTID
+sudo pct start $CTID
 sleep 5
 
 # === 3. DNS fix voor Tailgate (resolv.conf workaround) ===
-echo "nameserver 1.1.1.1" > /etc/resolv.custom.conf
-pct exec $CTID -- bash -c "echo 'nameserver 1.1.1.1' > /etc/resolv.conf"
+echo "nameserver 1.1.1.1" | sudo tee /etc/resolv.custom.conf > /dev/null
+sudo pct exec $CTID -- bash -c "echo 'nameserver 1.1.1.1' > /etc/resolv.conf"
 
 # === 4. Software installeren ===
 pct exec $CTID -- bash -c "apt update && apt upgrade -y"
