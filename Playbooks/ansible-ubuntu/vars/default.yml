@@ -3,7 +3,8 @@
 create_user: beheerder
 
 # SSH port
-ssh_port: 6123
+ssh_port: 22
+# dit was 6123
 
 # This tells Ansible where to find the SSH public key fingerprint file
 # to copy over to the target hosts. If the name of your local machine's

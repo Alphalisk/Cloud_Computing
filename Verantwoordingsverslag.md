@@ -231,6 +231,8 @@ unprivileged: 1
 
 #### Installatie stappen: 
 
+1) update en upgrade
+
 ```bash
 sudo apt update
 sudo apt upgrade -y
@@ -238,11 +240,15 @@ sudo apt upgrade -y
 
 ![alt text](Screenshots\Opdracht1\CTupdate&upgrade.png)
 
-Installeren van Wordpress:  
+2) Installeren van Apache, PHP en MariaDB:  
 
 ```bash
 apt install apache2 mariadb-server php php-mysql libapache2-mod-php php-cli php-curl php-gd php-xml php-mbstring unzip wget -y
 ```
+
+Apache test:
+![alt text](Screenshots\Opdracht1\Apachewerkend.png)
+
 
 ### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:
 
