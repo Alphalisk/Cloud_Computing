@@ -273,7 +273,25 @@ Controleren of databse en user ingesteld zijn (database wordpress, user wpuser):
 
 4) Wordpress installeren
 
+In de container CLI:
+```bash
+cd /tmp
+echo "nameserver 1.1.1.1" > /etc/resolv.conf
 
+# Dit moet op de host! niet de container
+wget https://wordpress.org/latest.tar.gz
+sudo pct push 101 latest.tar.gz /tmp/latest.tar.gz # pushen naar container.
+
+# Dan in de container:
+tar -xvzf latest.tar.gz
+sudo mv wordpress /var/www/html/wordpress
+sudo chown -R www-data:www-data /var/www/html/wordpress
+sudo chmod -R 755 /var/www/html/wordpress
+
+# Apache configureren
+sudo nano /etc/apache2/sites-available/wordpress.conf
+
+```
 
 ### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:
 
