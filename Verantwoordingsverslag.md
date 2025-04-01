@@ -298,7 +298,7 @@ sudo systemctl reload apache2
 De website heeft een ping, en geeft een standaard website als response.
 ![alt text](Screenshots\Opdracht1\WordpressPingEnCurl.png)
 
-# Firewall instellen
+#### Firewall instellen
 
 ```bash
 beheerder@pve01:~$ echo $CTID
@@ -319,6 +319,49 @@ beheerder@pve01:~$ sudo pct exec $CTID -- bash -c "yes | ufw enable"
 Firewall is active and enabled on system startup
 yes: standard output: Broken pipe
 beheerder@pve01:~$ 
+```
+
+#### User aanmaken
+
+```bash
+beheerder@pve01:~$ USERNAME="wpadmin"
+PUBKEY_PATH="/root/.ssh/id_rsa.pub"
+beheerder@pve01:~$ echo "🔑 Gebruiker '$USERNAME' aanmaken en SSH key toevoegen aan container $CTID"
+🔑 Gebruiker 'wpadmin' aanmaken en SSH key toevoegen aan container 111
+beheerder@pve01:~$ sudo pct exec $CTID -- bash -c "adduser --disabled-password --gecos '' $USERNAME"
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = (unset),
+        LC_ALL = (unset),
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+Adding user `wpadmin' ...
+Adding new group `wpadmin' (1000) ...
+Adding new user `wpadmin' (1000) with group `wpadmin' ...
+Creating home directory `/home/wpadmin' ...
+Copying files from `/etc/skel' ...
+beheerder@pve01:~$ sudo pct exec $CTID -- bash -c "mkdir -p /home/$USERNAME/.ssh"
+beheerder@pve01:~$ sudo pct exec $CTID -- bash -c \"echo '$(cat $PUBKEY_PATH)' > /home/$USERNAME/.ssh/authorized_keys\"
+-bash: /home/wpadmin/.ssh/authorized_keys": No such file or directory
+beheerder@pve01:~$ # 1. Maak gebruiker aan
+sudo pct exec $CTID -- adduser --disabled-password --gecos "" $USERNAME
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = (unset),
+        LC_ALL = (unset),
+        LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+adduser: The user `wpadmin' already exists.
+beheerder@pve01:~$ # 2. Maak .ssh dir aan
+sudo pct exec $CTID -- mkdir -p /home/$USERNAME/.ssh
+beheerder@pve01:~$ # 3. Push public key vanaf host naar container
+sudo pct push $CTID $PUBKEY_PATH /home/$USERNAME/.ssh/authorized_keys
+beheerder@pve01:~$ # 4. Zet juiste permissies
+sudo pct exec $CTID -- chown -R $USERNAME:$USERNAME /home/$USERNAME/.ssh
+sudo pct exec $CTID -- chmod 700 /home/$USERNAME/.ssh
+sudo pct exec $CTID -- chmod 600 /home/$USERNAME/.ssh/authorized_keys
 ```
 
 ### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:

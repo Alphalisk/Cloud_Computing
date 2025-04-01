@@ -33,15 +33,41 @@ sudo pct exec $CTID -- bash -c "echo 'nameserver 1.1.1.1' > /etc/resolv.conf"
 sudo pct exec $CTID -- bash -c "apt update && apt upgrade -y"
 sudo pct exec $CTID -- bash -c "apt install -y apache2 mariadb-server php php-mysql libapache2-mod-php php-cli php-curl php-gd php-xml php-mbstring unzip wget"
 
+# === 4.1 SSH-server installeren ===
+sudo pct exec $CTID -- bash -c "apt install -y openssh-server"
+sudo pct exec $CTID -- bash -c "systemctl enable ssh && systemctl start ssh"
+
+
 # === 4.5 Firewall instellen ===
 echo "🛡️  Firewall (UFW) instellen op container $CTID"
 
 sudo pct exec $CTID -- bash -c "apt install -y ufw"
 sudo pct exec $CTID -- bash -c "ufw default deny incoming"
+sudo pct exec $CTID -- bash -c "ufw allow 22/tcp comment 'Allow SSH'"
 sudo pct exec $CTID -- bash -c "ufw allow 80/tcp comment 'Allow HTTP'"
 sudo pct exec $CTID -- bash -c "ufw allow 443/tcp comment 'Allow HTTPS'"
 sudo pct exec $CTID -- bash -c "ufw allow out to any"
 sudo pct exec $CTID -- bash -c "yes | ufw enable"
+
+# === 4.6 SSH gebruiker + key instellen ===
+USERNAME="wpadmin"
+PUBKEY_PATH="/root/.ssh/id_rsa.pub"
+
+echo "🔑 Gebruiker '$USERNAME' aanmaken en SSH key toevoegen aan container $CTID"
+
+# 1. Maak gebruiker aan
+sudo pct exec $CTID -- adduser --disabled-password --gecos "" $USERNAME
+
+# 2. Maak .ssh dir aan
+sudo pct exec $CTID -- mkdir -p /home/$USERNAME/.ssh
+
+# 3. Push public key vanaf host naar container
+sudo pct push $CTID $PUBKEY_PATH /home/$USERNAME/.ssh/authorized_keys
+
+# 4. Zet juiste permissies
+sudo pct exec $CTID -- chown -R $USERNAME:$USERNAME /home/$USERNAME/.ssh
+sudo pct exec $CTID -- chmod 700 /home/$USERNAME/.ssh
+sudo pct exec $CTID -- chmod 600 /home/$USERNAME/.ssh/authorized_keys
 
 
 # === 5. MariaDB configureren ===
