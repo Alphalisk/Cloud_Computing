@@ -238,7 +238,7 @@ sudo apt upgrade -y
 
 ![alt text](Screenshots\Opdracht1\CTupdate&upgrade.png)
 
-Installeren van Wordpress:
+Installeren van Wordpress:  
 
 ```bash
 apt install apache2 mariadb-server php php-mysql libapache2-mod-php php-cli php-curl php-gd php-xml php-mbstring unzip wget -y
