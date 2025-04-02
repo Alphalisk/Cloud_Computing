@@ -3,7 +3,7 @@
 ## VM 200 aanmaken op HA-geschikte Ceph storage (vm-storage)
 sudo qm create 200 \
   --name wpcrm \
-  --memory 2048 \
+  --memory 4096 \
   --cores 2 \
   --net0 virtio,bridge=vmbr0 \
   --scsihw virtio-scsi-pci \
