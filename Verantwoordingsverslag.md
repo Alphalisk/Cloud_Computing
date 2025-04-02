@@ -501,6 +501,24 @@ echo "✅ Container $CTID klaar! Bezoek: http://${IP}/wordpress"
 ![alt text](Screenshots\Opdracht1\Apacheonline.png)
 
 ![alt text](Screenshots\Opdracht1\Wordpressonline.png)
+
+### 6 containers gemaakt voor de klant
+
+Het script is zes keer uitgevoerd en er zijn nu 6 containers beschikbaar voor de klant.  
+Deze containers voldoen aan de gestelde eisen:
+
+| Eigenschap       | Waarde                        |
+|------------------|-------------------------------|
+| CPU              | 1 core                        |
+| RAM              | 1024 MB (1 GB)                |
+| Disk             | 30 GB                         |
+| Network limit    | 50 MB/s                       |
+| Poorten open     | 80 (HTTP), 443 (HTTPS)        |
+| Firewall         | Alleen toegang tot webdiensten|
+
+![alt text](Screenshots\Opdracht1\6ContainersWebsite.png)
+
+
 ## Verantwoording Opdracht 1: Klant 2
 
 

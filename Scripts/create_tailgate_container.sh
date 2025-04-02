@@ -1,4 +1,4 @@
-CTID=131 # Vul hier de naam van de container in!
+CTID=xx # Vul hier de naam van de container in!
 
 # Key
 sudo pct push $CTID /tmp/tailscale.env /tmp/tailscale.env
