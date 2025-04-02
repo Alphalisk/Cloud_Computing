@@ -370,8 +370,6 @@ Na het uitvoeren van systemctl start ceph-osd@1 is de OSD weer gestart en toont 
 Hiermee is aangetoond dat de fouttolerantie van Ceph correct werkt en dat het cluster zichzelf herstelt zodra een OSD weer beschikbaar is.
 
 
-#### Monitoring instellen
-
 
 
 ### Fase 2, CLI commando's omzetten naar Bash-script voor automatisch aanmaken container:
@@ -867,10 +865,46 @@ En wordpress raadplegen met tailgate ip in browser.
 
 ![alt text](Screenshots\Klant2\TailscaleWordpress.png)
 
-#### Installeer een CRM
-
+#### Installeer een CRM + wordpress via host
 ```bash
-beheerder@pve02:~$ ssh wpadmin@10.24.13.200 << 'EOF'
+# zeker weten dat DNS goed staat
+ssh wpadmin@10.24.13.200 "echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf"
+
+# WP-CLI installeren
+ssh wpadmin@10.24.13.200 << 'EOF'
+cd ~
+curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+sudo mv wp-cli.phar /usr/local/bin/wp
+wp --info
+EOF
+
+# Maak wp-config.php direct aan via WP-CLI
+ssh wpadmin@10.24.13.200 << 'EOF'
+cd /var/www/html/wordpress
+sudo -u www-data wp config create \
+  --dbname=wordpress \
+  --dbuser=wpuser \
+  --dbpass=wppass \
+  --dbhost=localhost \
+  --skip-check \
+  --force
+EOF
+
+# WordPress core installatie (vanaf host)
+ssh wpadmin@10.24.13.200 << 'EOF'
+cd /var/www/html/wordpress
+sudo -u www-data wp core install \
+  --url="http://10.24.13.200/wordpress" \
+  --title="WPCRM Site" \
+  --admin_user=admin \
+  --admin_password=adminpass123 \
+  --admin_email=admin@example.com
+EOF
+
+
+# CRM installeren Jetpack CRM
+ssh wpadmin@10.24.13.200 << 'EOF'
 cd /var/www/html/wordpress
 wp plugin install zero-bs-crm --activate
 EOF
@@ -882,6 +916,43 @@ Niet de mooiste site :)
 Maar hij werkt wel!
 
 ![alt text](Screenshots\Klant2\WordpressCRM.png)
+
+## Monitoring
+
+Stap 1 - zeker weten dat er geen oude netdata is.
+(ik heb een paar keer netdata geinstalleerd die niet werkte.)
+
+```bash
+# purge old netdata
+ssh wpadmin@10.24.13.200 << 'EOF'
+sudo systemctl stop netdata || true
+sudo pkill netdata || true
+sudo apt purge --yes netdata netdata-core netdata-web netdata-plugins-* || true
+sudo rm -rf /etc/netdata /var/lib/netdata /var/cache/netdata /opt/netdata /usr/lib/netdata /usr/sbin/netdata
+sudo rm -f /etc/systemd/system/netdata.service
+EOF
+```
+
+Stap 2: Goede install.
+
+```bash
+# clean install
+ssh wpadmin@10.24.13.200 << 'EOF'
+bash <(curl -SsL https://my-netdata.io/kickstart.sh)
+EOF
+```
+
+Stap 3: Firewall moet 19999 toelaten van netstat.
+
+```bash
+# Firewall (misschien nodig)
+sudo ufw allow 19999/tcp comment 'Allow Netdata'
+sudo systemctl restart netdata
+```
+
+De monitoring van de VM werkt op WPCRM!
+
+![alt text](Screenshots\Klant2\monitorNetStat.png)
 
 *Gemaakt door: Richard Mank*  
 *Studentnummer: []*  
