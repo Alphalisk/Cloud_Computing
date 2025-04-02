@@ -693,7 +693,7 @@ Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your 
 nameserver 1.1.1.1
 ```
 
-#### Firewall instellen
+#### Stap 6 Firewall instellen
 
 ```bash
 beheerder@pve02:~$ ssh wpadmin@10.24.13.200 << 'EOF'
@@ -718,13 +718,32 @@ To                         Action      From
 443 (v6)                   ALLOW IN    Anywhere (v6)              # Allow HTTPS
 ```
 
-#### Update en upgrade
+#### Stap 7 Vergrootten ruimte
+
+Er bleek niet genoeg ruimte te zijn.
 
 ```bash
+beheerder@pve02:~$ qm stop 200
+-bash: qm: command not found
+beheerder@pve02:~$ sudo qm stop 200
+Requesting HA stop for VM 200
+beheerder@pve02:~$ sudo qm resize 200 scsi0 +10G
+Resizing image: 100% complete...done.
+beheerder@pve02:~$ sudo qm start 200
+Requesting HA start for VM 200
+```
+
+#### Stap 8 Update en upgrade
+
+```bash
+ssh wpadmin@10.24.13.200 "echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf" # Zeker weten dat DNS goed gaat.
+
 ssh wpadmin@10.24.13.200 << 'EOF'
 sudo apt update && sudo apt upgrade -y
 EOF
 ```
+
+
 
 
 ## Verantwoording Opdracht 2: Docker
