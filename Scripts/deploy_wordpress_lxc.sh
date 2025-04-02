@@ -22,11 +22,63 @@ sudo pct create $CTID $TEMPLATE \
   --rootfs ${STORAGE}:30 \
   --ostype ubuntu \
   --unprivileged 1 \
-  --features nesting=1 \
+  --features nesting=1
+
+# === 1.5 Containerconfig aanpassen voor Tailscale (TUN device) ===
+echo "⚙️  Pas containerconfig aan voor TUN toegang (Tailscale compatibiliteit)"
+CTCONF="/etc/pve/lxc/${CTID}.conf"
+
+# Voeg nesting expliciet toe als backup
+if ! sudo grep -q "features: nesting=1" "$CTCONF"; then
+    echo "features: nesting=1" | sudo tee -a "$CTCONF" > /dev/null
+fi
+
+# Voeg toegang toe tot TUN device
+if ! sudo grep -q "lxc.cgroup2.devices.allow: c 10:200 rwm" "$CTCONF"; then
+    echo "lxc.cgroup2.devices.allow: c 10:200 rwm" | sudo tee -a "$CTCONF" > /dev/null
+fi
+
+if ! sudo grep -q "lxc.mount.entry: /dev/net/tun" "$CTCONF"; then
+    echo "lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file" | sudo tee -a "$CTCONF" > /dev/null
+fi
+
 
 # === 2. Container starten ===
 sudo pct start $CTID
-sleep 5
+echo "⏳ Wachten tot container netwerk klaar is..."
+sleep 10
+
+# Test of internet werkt (optioneel, visuele check)
+sudo pct exec $CTID -- ping -c 1 1.1.1.1 >/dev/null 2>&1 && echo "✅ Netwerk werkt binnen container" || echo "⚠️  Geen internet binnen contaainer"
+
+
+# # === 2.1 Tailscale installeren en verbinden ===
+# TAILSCALE_AUTH_KEY="...."  #
+# echo "🌐 Tailscale installeren en verbinden op container $CTID"
+
+# # Mirror
+# echo "🌍 Mirror aanpassen naar nl.archive.ubuntu.com"
+# sudo pct exec $CTID -- bash -c "sed -i 's|http://archive.ubuntu.com|http://nl.archive.ubuntu.com|g' /etc/apt/sources.list"
+# sudo pct exec $CTID -- bash -c "until apt update; do echo 'APT update faalde, opnieuw proberen...'; sleep 3; done"
+
+
+# # Stap 1: curl installeren (anders faalt download)
+# sudo pct exec $CTID -- bash -c "apt update && apt install -y curl"
+
+# # Stap 2: tailscale installeren
+# sudo pct exec $CTID -- bash -c "curl -fsSL https://tailscale.com/install.sh | sh"
+
+# # Stap 2.5: tailscaled starten
+# sudo pct exec $CTID -- bash -c "systemctl enable tailscaled && systemctl start tailscaled"
+
+# # Stap 3: tailscale activeren met auth key
+# sudo pct exec $CTID -- bash -c "tailscale up --authkey=${TAILSCALE_AUTH_KEY} --hostname=${HOSTNAME}"
+
+
+# # Optioneel: IP tonen
+# TAILSCALE_IP=$(sudo pct exec $CTID -- tailscale ip | head -n 1)
+# echo "✅ Tailscale IP van container $CTID: $TAILSCALE_IP"
+
 
 # === 3. DNS fix voor Tailgate (resolv.conf workaround) ===
 echo "nameserver 1.1.1.1" | sudo tee /etc/resolv.custom.conf > /dev/null
@@ -111,4 +163,8 @@ echo " Curl test vanaf host naar http://${IP}/wordpress"
 curl -s -o /dev/null -w "📡 HTTP status: %{http_code}\n" http://${IP}/wordpress # Dit moet 200 of 301 zijn.
 
 echo "✅ Container $CTID klaar! Bezoek: http://${IP}/wordpress"
+echo "Dit is de lokale IP, vanwege tailscale kan met de script ./create_tailgate_container.sh een verbinding gemaakt worden."
 
+# # === 10. Status check Tailscale ===
+# echo "🔍 Controleer Tailscale status:"
+# sudo pct exec $CTID -- tailscale status | head -n 5
