@@ -515,6 +515,69 @@ Deze containers voldoen aan de gestelde eisen:
 
 ![alt text](Screenshots\Opdracht1\6ContainersWebsite.png)
 
+### Monitoring
+
+Allereerst handmatig op een container proberen netstat te regelen.
+
+```bash
+echo "📈 Netdata installeren op container $CTID"
+sudo pct exec $CTID -- bash -c "apt install -y curl sudo"
+
+# Installatie via Netdata kickstart script
+sudo pct exec $CTID -- bash -c "bash <(curl -SsL https://my-netdata.io/kickstart-static64.sh)"
+
+# UFW-poort openen
+sudo pct exec $CTID -- ufw allow 19999/tcp comment 'Allow Netdata web interface'
+```
+
+Daarna controleren of het werkt.
+
+```bash
+beheerder@pve01:~$ sudo pct exec $CTID -- systemctl status netdata --no-pager
+● netdata.service - Netdata, X-Ray Vision for your infrastructure!
+     Loaded: loaded (/lib/systemd/system/netdata.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2025-04-02 19:24:23 UTC; 1min 3s ago
+    Process: 26490 ExecStartPre=/bin/mkdir -p /var/cache/netdata (code=exited, status=0/SUCCESS)
+    Process: 26492 ExecStartPre=/bin/chown -R netdata /var/cache/netdata (code=exited, status=0/SUCCESS)
+   Main PID: 26493 (netdata)
+      Tasks: 92 (limit: 19116)
+     Memory: 119.8M
+        CPU: 3.457s
+     CGroup: /system.slice/netdata.service
+             ├─26493 /usr/sbin/netdata -P /run/netdata/netdata.pid -D
+             ├─26596 "spawn-plugins    " "  " "                        " "  "
+             ├─26822 bash /usr/libexec/netdata/plugins.d/tc-qos-helper.sh 1
+             ├─26823 /usr/libexec/netdata/plugins.d/systemd-journal.plugin 1
+             ├─26830 /usr/libexec/netdata/plugins.d/go.d.plugin 1
+             ├─26831 /usr/libexec/netdata/plugins.d/network-viewer.plugin 1
+             ├─26840 /usr/libexec/netdata/plugins.d/nfacct.plugin 1
+             ├─26849 /usr/libexec/netdata/plugins.d/apps.plugin 1
+             └─26852 "spawn-setns                                         " " "
+
+Apr 02 19:24:32 wp135 netdata[26493]: Dimension metadata check has been scheduled to run (max id = 2237)
+Apr 02 19:24:32 wp135 netdata[26493]: Chart metadata check has been scheduled to run (max id = 1064)
+Apr 02 19:24:32 wp135 netdata[26493]: Chart label metadata check has been scheduled to run (max id = 4305)
+Apr 02 19:24:37 wp135 netdata[26493]: ALERT 'system_post_update_reboot_status' of 'system.post_update_reboot_status' on node 'wp1…o WARNING.
+                                      ⚠️ System requires reboot after package updates on wp135.
+                                      wp135:system.post_update_reboot_status:system_post_update_reboot_status value got from nan status, to…
+Apr 02 19:24:37 wp135 netdata[27025]: time=2025-04-02T19:24:37.142Z comm=alarm-notify.sh source=health level=info tid=27025 threa…010 alert_
+Apr 02 19:24:38 wp135 cgroup-name.sh[27060]: cgroup '.lxc' is called '.lxc', labels ''
+Apr 02 19:24:38 wp135 cgroup-network-helper.sh[27068]: searching for network interfaces of cgroup '/sys/fs/cgroup/.lxc'
+Apr 02 19:24:38 wp135 spawn-plugins[26596]: SPAWN SERVER: child with pid 27061 (request 19) exited with exit code 1: /usr/libexec/…roup/.lxc
+Apr 02 19:24:38 wp135 cgroup-name.sh[27077]: cgroup 'init.scope' is called 'init.scope', labels ''
+Apr 02 19:24:39 wp135 netdata[26493]: Cannot refresh cgroup /.lxc cpu limit by reading '/sys/fs/cgroup/.lxc/cpu.max'. Will not up…t anymore.
+Hint: Some lines were ellipsized, use -l to show in full.
+beheerder@pve01:~$ sudo pct exec $CTID -- ss -tuln | grep 19999
+tcp   LISTEN 0      4096                       0.0.0.0:19999      0.0.0.0:*
+tcp   LISTEN 0      4096                          [::]:19999         [::]:*
+beheerder@pve01:~$ curl -s -o /dev/null -w "📡 HTTP status: %{http_code}\n" http://10.24.13.${CTID}:19999
+📡 HTTP status: 200
+beheerder@pve01:~$
+```
+
+Gelukt om te monitoren, hierbij de screenshot van wp135!
+
+![alt text](Screenshots\Opdracht1\monitorcontainer135.png)
 
 ## Verantwoording Opdracht 1: Klant 2
 
@@ -917,7 +980,7 @@ Maar hij werkt wel!
 
 ![alt text](Screenshots\Klant2\WordpressCRM.png)
 
-## Monitoring
+#### Monitoring
 
 Stap 1 - zeker weten dat er geen oude netdata is.
 (ik heb een paar keer netdata geinstalleerd die niet werkte.)
