@@ -53,7 +53,7 @@ sudo pct exec $CTID -- ping -c 1 1.1.1.1 >/dev/null 2>&1 && echo "✅ Netwerk we
 
 
 # === 2.1 Tailscale installeren en verbinden ===
-TAILSCALE_AUTH_KEY="tskey-auth-kPrPPiyXcv11CNTRL-RetqYbsDMLeuLdpAgK4JLeRwPy1cEDakH"  # <<< Vervang dit met jouw eigen auth key
+TAILSCALE_AUTH_KEY=""  # <<< Vervang dit met jouw eigen auth key
 echo "🌐 Tailscale installeren en verbinden op container $CTID"
 
 # Mirror
