@@ -1,4 +1,4 @@
-CTID=## # Vul hier de naam van de container in!
+CTID=131 # Vul hier de naam van de container in!
 
 # Key
 sudo pct push $CTID /tmp/tailscale.env /tmp/tailscale.env
@@ -23,7 +23,7 @@ sudo pct exec $CTID -- bash -c '
     if tailscale status &>/dev/null; then break; fi
     echo "⏳ Wachten op tailscaled backend..."; sleep 2
   done
-  tailscale up --authkey "$TAILSCALE_AUTH_KEY" --hostname wp112 --ssh
+  tailscale up --authkey "$TAILSCALE_AUTH_KEY" --hostname wp$CTID --ssh
   echo "🌐 Tailscale IP:"; tailscale ip -4 | head -n 1
   echo "🔗 DNS naam:"; tailscale status --json | jq -r ".Self.DNSName"
   '
