@@ -659,6 +659,73 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install apache2 mariadb-server php php-mysql unzip wget
 ```
 
+#### Stap 5: DNS server goed instellen
+
+```bash
+beheerder@pve02:~$ ssh wpadmin@10.24.13.200 << 'EOF'
+echo "nameserver 1.1.1.1" | sudo tee /etc/resolv.conf
+EOF
+Pseudo-terminal will not be allocated because stdin is not a terminal.
+Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 5.15.0-135-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Wed Apr  2 17:37:59 UTC 2025
+
+  System load:  0.0               Processes:             96
+  Usage of /:   76.7% of 1.96GB   Users logged in:       0
+  Memory usage: 10%               IPv4 address for eth0: 10.24.13.200
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+
+nameserver 1.1.1.1
+```
+
+#### Firewall instellen
+
+```bash
+beheerder@pve02:~$ ssh wpadmin@10.24.13.200 << 'EOF'
+sudo apt update
+sudo apt install -y ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 22 comment 'Allow SSH'
+sudo ufw allow 80 comment 'Allow HTTP'
+sudo ufw allow 443 comment 'Allow HTTPS'
+sudo ufw --force enable
+sudo ufw status verbose
+EOF
+
+To                         Action      From
+--                         ------      ----
+22                         ALLOW IN    Anywhere                   # Allow SSH
+80                         ALLOW IN    Anywhere                   # Allow HTTP
+443                        ALLOW IN    Anywhere                   # Allow HTTPS
+22 (v6)                    ALLOW IN    Anywhere (v6)              # Allow SSH
+80 (v6)                    ALLOW IN    Anywhere (v6)              # Allow HTTP
+443 (v6)                   ALLOW IN    Anywhere (v6)              # Allow HTTPS
+```
+
+#### Update en upgrade
+
+```bash
+ssh wpadmin@10.24.13.200 << 'EOF'
+sudo apt update && sudo apt upgrade -y
+EOF
+```
+
 
 ## Verantwoording Opdracht 2: Docker
 
