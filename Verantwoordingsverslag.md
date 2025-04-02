@@ -523,40 +523,141 @@ Deze containers voldoen aan de gestelde eisen:
 
 ### Gedane stappen in Bash:
 
+#### Basisinstellingen
+
+# === Instellingen ===
+
+```bash
+beheerder@pve02:~$ # === Instellingen ===
+VMID=200
+VMNAME="wpcrm"
+CEPHPOOL="vm-storage"
+DISK="${CEPHPOOL}:vm-${VMID}-disk-0"
+CLOUDIMG_URL="https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
+IMG_RAW="ubuntu.raw"
+CLOUDIMG="jammy-server-cloudimg-amd64.img"
+MEM=2048
+CORES=2
+IP="10.24.13.200/24"
+GW="10.24.13.1"
+USER="wpadmin"
+SSH_PUBKEY_PATH="$HOME/.ssh/id_rsa.pub"
+```
+
+## Ubuntu Image op CEPH plaatsen
+
+```
+beheerder@pve02:~$ echo "📥 Download Ubuntu Cloud Image"
+sudo wget -O $CLOUDIMG $CLOUDIMG_URL
+📥 Download Ubuntu Cloud Image
+--2025-04-02 19:06:15--  https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+Resolving cloud-images.ubuntu.com (cloud-images.ubuntu.com)... 185.125.190.37, 185.125.190.40, 2620:2d:4000:1::1a, ...
+Connecting to cloud-images.ubuntu.com (cloud-images.ubuntu.com)|185.125.190.37|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 668097536 (637M) [application/octet-stream]
+Saving to: ‘jammy-server-cloudimg-amd64.img’
+
+jammy-server-cloudimg-amd64.img    100%[================================================================>] 637.15M   107MB/s    in 6.0s    
+
+2025-04-02 19:06:21 (106 MB/s) - ‘jammy-server-cloudimg-amd64.img’ saved [668097536/668097536]
+
+beheerder@pve02:~$ echo "🔄 Converteer naar RAW"
+sudo qemu-img convert -f qcow2 -O raw $CLOUDIMG $IMG_RAW
+🔄 Converteer naar RAW
+
+beheerder@pve02:~$ echo "🧹 Verwijder bestaande disk als die bestaat (optioneel)"
+sudo rbd rm ${DISK} 2>/dev/null
+🧹 Verwijder bestaande disk als die bestaat (optioneel)
+```
+
+
 #### Stap 1: Maak een nieuwe VM aan
 ```bash
-beheerder@pve02:~$ sudo qm create 200 \
-  --name wpcrm \
-  --memory 2048 \
-  --cores 2 \
+beheerder@pve02:~$ echo "🧱 Maak VM aan op Ceph"
+sudo qm create $VMID \
+  --name $VMNAME \
+  --memory $MEM \
+  --cores $CORES \
   --net0 virtio,bridge=vmbr0 \
   --scsihw virtio-scsi-pci \
-  --scsi0 vm-storage:32 \
-  --ide2 vm-storage:cloudinit \
+  --ide2 ${CEPHPOOL}:cloudinit \
   --ostype l26
+🧱 Maak VM aan op Ceph
 ide2: successfully created disk 'vm-storage:vm-200-cloudinit,media=cdrom'
-scsi0: successfully created disk 'vm-storage:vm-200-disk-0,size=32G'
-beheerder@pve02:~$ # Boot volgorde en disk instellen
-sudo qm set 200 --boot c --bootdisk scsi0
-update VM 200: -boot c -bootdisk scsi0
-beheerder@pve02:~$ # Cloud-init config (voor testomgeving)
-sudo qm set 200 --ciuser wpadmin --cipassword securepass --ipconfig0 ip=10.24.13.200/24,gw=10.24.13.1
-update VM 200: -cipassword <hidden> -ciuser wpadmin -ipconfig0 ip=10.24.13.200/24,gw=10.24.13.1
+
+beheerder@pve02:~$ sudo qm set $VMID --scsi0 ${DISK}
+update VM 200: -scsi0 vm-storage:vm-200-disk-0
+
+beheerder@pve02:~$ sudo qm set $VMID --boot order=scsi0"
+update VM 200: -boot order=scsi0
+
+beheerder@pve02:~$ echo "🔑 Cloud-init configuratie (gebruiker, IP, sleutel)"
+sudo qm set $VMID \
+  --ciuser $USER \
+  --sshkey $SSH_PUBKEY_PATH \
+  --ipconfig0 ip=${IP},gw=${GW}
+🔑 Cloud-init configuratie (gebruiker, IP, sleutel)
+update VM 200: -ciuser wpadmin -ipconfig0 ip=10.24.13.200/24,gw=10.24.13.1 -sshkeys ssh-rsa%20AAAAB3NzaC1yc2EAAAADAQABAAACAQDa96FPab%2FBfhZji%2BzZMkU2thb%2BjUkcupUz6FKECcD7GnknlvcW7fek70H1%2F%2FxP3kOb8CdLSCI0Yg9xHhoCsIfW9JIEI4SToNJyEcSR2FiU9U70Nwtdo0Nu6CL9eYx%2F4WN5VrNFx%2B1EHxh3zwd%2Bx1Yr858tpzYu6ZhjrN83oNjpWedo1%2F7wHteJoFtW2ZQV%2FhEFvCpBzoAkNv9yN5PUi5xE0dVmTllbIQV%2F26IJx3BS09jSiK%2F9jUMrkx662lM15vBw1tUolPM2KMT0gJ6FnYJTRP%2F5K3tA%2Fau6a1nrdZ4%2F6W%2Bah3vc3tUQ6XFudPE%2Bg9Fm4ooSs0MI6%2FxgOKvB6zcGapIaP6C9VPlTzdaxim%2FQdgxImsi4f6ZpdD67AbpYrRvP05vd7Hwy0tEyUF0C%2FxUa5lMWjcjctq2cFYs9bkr4860sarRcmbqFBkmfBKI5yZa2aRwJn70ILzGpy2ZkvWrpq4KbIkBJP%2F9p%2BmWremAyQii1ZUE5nu85pPYHT29Lc1Zd03tmjxnaSmQPh0IHWHccm07LTlOAB5X802m%2FwyjZdmHgMfW2YHXTzGY3o7eBzT8bBo2MtBKUqyXAbj1CfBBPyaOzJIEUDSQX5qHPDaYrfkK8iCJUH%2BT83QeNWH1XPY7b7ubuACzrq2yC7sEbN3XoqZPpLaLOJa8myg0%2FZabVcQ%3D%3D%20beheerder%40pve02%0A
 ```
 
 
 #### Stap 2: Voeg de VM toe aan de HA groep
 ```bash
-beheerder@pve02:~$ # Voeg toe aan HA
-sudo ha-manager add vm:200
+beheerder@pve02:~$ echo "📡 Voeg toe aan HA"
+sudo ha-manager add vm:$VMID
+📡 Voeg toe aan HA
 ```
 
-#### Stap 3: Installeer en configureer WordPress
+
+#### Stap 3: Start VM en log in met certificaat zonder wachtwoord
+```bash
+beheerder@pve02:~$ echo "🚀 Start VM"
+sudo qm start $VMID
+🚀 Start VM
+Requesting HA start for VM 200
+
+beheerder@pve02:~$ ssh wpadmin@10.24.13.200
+The authenticity of host '10.24.13.200 (10.24.13.200)' can't be established.
+ED25519 key fingerprint is SHA256:VWayaXNhuygFG9i5x60AlC5ggCmUIDdMPHA3nVp7M8k.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.24.13.200' (ED25519) to the list of known hosts.
+Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 5.15.0-135-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Wed Apr  2 17:24:49 UTC 2025
+
+  System load:  0.0               Processes:             98
+  Usage of /:   76.7% of 1.96GB   Users logged in:       0
+  Memory usage: 10%               IPv4 address for eth0: 10.24.13.200
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+
+Last login: Wed Apr  2 17:13:25 2025 from 10.24.13.102
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+wpadmin@wpcrm:~$ 
+```
+
+#### Stap 4: Installeer en configureer WordPress
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install apache2 mariadb-server php php-mysql unzip wget
 ```
-
 
 
 ## Verantwoording Opdracht 2: Docker
