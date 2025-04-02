@@ -492,6 +492,15 @@ curl -s -o /dev/null -w "📡 HTTP status: %{http_code}\n" http://${IP}/wordpres
 echo "✅ Container $CTID klaar! Bezoek: http://${IP}/wordpress"
 ```
 
+### Wordpress werkend in browser via tailscale
+
+![alt text](Screenshots\Opdracht1\CLIWorkingContainer.png)
+
+![alt text](Screenshots\Opdracht1\ContainersTailgate.png)
+
+![alt text](Screenshots\Opdracht1\Apacheonline.png)
+
+![alt text](Screenshots\Opdracht1\Wordpressonline.png)
 ## Verantwoording Opdracht 1: Klant 2
 
 
