@@ -867,7 +867,21 @@ En wordpress raadplegen met tailgate ip in browser.
 
 ![alt text](Screenshots\Klant2\TailscaleWordpress.png)
 
+#### Installeer een CRM
 
+```bash
+beheerder@pve02:~$ ssh wpadmin@10.24.13.200 << 'EOF'
+cd /var/www/html/wordpress
+wp plugin install zero-bs-crm --activate
+EOF
+```
+
+#### Wordpress site met CRM
+
+Niet de mooiste site :)
+Maar hij werkt wel!
+
+![alt text](Screenshots\Klant2\WordpressCRM.png)
 
 *Gemaakt door: Richard Mank*  
 *Studentnummer: []*  
