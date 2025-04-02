@@ -521,6 +521,36 @@ Deze containers voldoen aan de gestelde eisen:
 
 ## Verantwoording Opdracht 1: Klant 2
 
+### Gedane stappen in Bash:
+
+#### Stap 1: Maak een nieuwe VM aan
+```bash
+beheerder@pve02:~$ sudo qm create 200 --name wpcrm --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0 --ide2 local:cloudinit --ostype l26 --scsihw virtio-scsi-pci --scsi0 local-lvm:32
+Formatting '/var/lib/vz/images/200/vm-200-cloudinit.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off preallocation=metadata compression_type=zlib size=4194304 lazy_refcounts=off refcount_bits=16
+ide2: successfully created disk 'local:200/vm-200-cloudinit.qcow2,media=cdrom'
+  Logical volume "vm-200-disk-0" created.
+scsi0: successfully created disk 'local-lvm:vm-200-disk-0,size=32G'
+beheerder@pve02:~$ qm set 200 --boot c --bootdisk scsi0
+-bash: qm: command not found
+beheerder@pve02:~$ sudo qm set 200 --boot c --bootdisk scsi0
+update VM 200: -boot c -bootdisk scsi0
+beheerder@pve02:~$ sudo qm set 200 --ciuser wpadmin --cipassword securepass --ipconfig0 ip=10.24.13.200/24,gw=10.24.13.1
+update VM 200: -cipassword <hidden> -ciuser wpadmin -ipconfig0 ip=10.24.13.200/24,gw=10.24.13.1
+```
+
+
+#### Stap 2: Voeg de VM toe aan de HA groep
+```bash
+beheerder@pve02:~$ sudo ha-manager add vm:200
+```
+
+#### Stap 3: Installeer en configureer WordPress
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install apache2 mariadb-server php php-mysql unzip wget
+```
+
+
 
 ## Verantwoording Opdracht 2: Docker
 
