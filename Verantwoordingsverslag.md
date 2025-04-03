@@ -666,7 +666,18 @@ update VM 200: -ciuser wpadmin -ipconfig0 ip=10.24.13.200/24,gw=10.24.13.1 -sshk
 beheerder@pve02:~$ echo "📡 Voeg toe aan HA"
 sudo ha-manager add vm:$VMID
 📡 Voeg toe aan HA
+
+# Maak een HA-groep aan genaamd 'wp-ha' met prioriteiten per node
+beheerder@pve02:~$ sudo ha-manager groupadd wp-ha --nodes pve00,pve01,pve02
+beheerder@pve02:~$ sudo ha-manager groupset wp-ha --nodes pve01:150, pve02:200, pve00:100
+
+# Voeg VM toe aan de HA 
+sudo ha-manager add vm:200 --group wp-ha --state started
 ```
+
+Het lukte me niet goed met CLI, dus uitenidelijk met GUI opgelost.
+
+![alt text](Screenshots\Klant2\instellenHAgroep.png)
 
 
 #### Stap 3: Start VM en log in met certificaat zonder wachtwoord
@@ -1014,6 +1025,24 @@ sudo systemctl restart netdata
 ```
 
 De monitoring van de VM werkt op WPCRM!
+
+#### Failover test
+
+De VM met HA wordt uitgezet.
+
+```bash
+# op terminal 1:
+beheerder@pve02:~$ sudo watch -n1 ha-manager status
+
+# op teminal 2, simuleer stroomuitval
+echo b | sudo tee /proc/sysrq-trigger
+```
+
+De video van de HA is opgenomen in de video in de bijlage.
+
+
+
+
 
 ![alt text](Screenshots\Klant2\monitorNetStat.png)
 
