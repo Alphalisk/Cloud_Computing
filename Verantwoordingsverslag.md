@@ -1026,6 +1026,8 @@ sudo systemctl restart netdata
 
 De monitoring van de VM werkt op WPCRM!
 
+![alt text](Screenshots\Klant2\monitorNetStat.png)
+
 #### Failover test
 
 De VM met HA wordt uitgezet.
@@ -1035,18 +1037,17 @@ De VM met HA wordt uitgezet.
 beheerder@pve02:~$ sudo watch -n1 ha-manager status
 
 # op teminal 2, simuleer stroomuitval
-echo b | sudo tee /proc/sysrq-trigger
+sudo systemctl poweroff
 ```
 
-De video van de HA is opgenomen in de video in de bijlage.
+screenshot:
 
+![alt text](Screenshots\Opdracht1\MailServerAanzetten.png)
 
+De video van de HA is opgenomen in de video in de bijlage. *(te groot voor github)*
 
-
-
-![alt text](Screenshots\Klant2\monitorNetStat.png)
 
 *Gemaakt door: Richard Mank*  
-*Studentnummer: []*  
+*Studentnummer: 460389*  
 *Datum: 2-4-2025*
 
