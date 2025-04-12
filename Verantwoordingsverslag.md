@@ -49,7 +49,7 @@ De volgende stappen zijn uitgevoerd:
 
 Hierbij een screenshot van de ingestelde partities:
 
-![alt text](.\Screenshots\VoorbereidendeOpdracht\InzagePartities.png)
+![alt text](./Screenshots/VoorbereidendeOpdracht/InzagePartities.png)
 
 ---
 
@@ -108,7 +108,7 @@ ansible-playbook --ask-vault-pass ongoing.yml
 Hiermee zijn updates geautomatiseerd uitgevoerd op alle nodes – een concrete invulling van "updates via orchestration".
 
 Resultaat:
-![alt text](Screenshots\VoorbereidendeOpdracht\PlaybookOngoing.png)
+![alt text](Screenshots/VoorbereidendeOpdracht/PlaybookOngoing.png)
 
 ---
 
@@ -121,7 +121,7 @@ Ceph is op alle nodes geïnstalleerd voor gedeelde, fouttolerante opslag. Hierdo
 
 Hierbij een screenshot van het monitoren:
 
-![alt text](.\Screenshots\VoorbereidendeOpdracht\WerkendClusterEnCeph.png)
+![alt text](./Screenshots/VoorbereidendeOpdracht/WerkendClusterEnCeph.png)
 
 ---
 
@@ -154,9 +154,9 @@ system          ubuntu-22.04-standard_22.04-1_amd64.tar.zst
 root@pve00:~# pveam download local ubuntu-22.04-standard_22.04-1_amd64.tar.zst
 ```
 
-![alt text](Screenshots\Opdracht1\TemplateDownloaden.png)
+![alt text](Screenshots/Opdracht1/TemplateDownloaden.png)
 
-![alt text](Screenshots\Opdracht1\TemplateDownloaden2.png)
+![alt text](Screenshots/Opdracht1/TemplateDownloaden2.png)
 
 #### Stap 2: Maak een enkele container aan.
 
@@ -188,13 +188,13 @@ root@pve00:~# ssh -p 6123 beheerder@pve01 'sudo pct create 101 local:vztmpl/ubun
 
 Screenshot:
 
-![alt text](Screenshots\Opdracht1\ContainerCLI.png)
+![alt text](Screenshots/Opdracht1/ContainerCLI.png)
 
 ### Stap 3: Firewall instellen
 
 Op de managed node stel ik de firewall voor container CT 101 in:
 
-![alt text](Screenshots\Opdracht1\FirewallInstellen.png)
+![alt text](Screenshots/Opdracht1/FirewallInstellen.png)
 
 ### Stap 4: Testen of het werkt
 
@@ -206,7 +206,7 @@ beheerder@pve01:~$ sudo pct exec 101 -- bash
 root@wp1:/# 
 ```
 
-![alt text](Screenshots\Opdracht1\ContainerStarten.png)
+![alt text](Screenshots/Opdracht1/ContainerStarten.png)
 
 ### Stap 5: Wordpress installeren
 
@@ -237,7 +237,7 @@ sudo apt update
 sudo apt upgrade -y
 ```
 
-![alt text](Screenshots\Opdracht1\CTupdate&upgrade.png)
+![alt text](Screenshots/Opdracht1/CTupdate&upgrade.png)
 
 2) Installeren van Apache, PHP en MariaDB:  
 
@@ -246,7 +246,7 @@ apt install apache2 mariadb-server php php-mysql libapache2-mod-php php-cli php-
 ```
 
 Apache test:
-![alt text](Screenshots\Opdracht1\Apachewerkend.png)
+![alt text](Screenshots/Opdracht1/Apachewerkend.png)
 
 3) MariaDB aanmaken:
 
@@ -264,10 +264,10 @@ EXIT;
 ```
 
 Aanmaken Database:
-![alt text](Screenshots\Opdracht1\MariaDBwerkend.png)
+![alt text](Screenshots/Opdracht1/MariaDBwerkend.png)
 
 Controleren of databse en user ingesteld zijn (database wordpress, user wpuser):
-![alt text](Screenshots\Opdracht1\MariaDBenuser.png)
+![alt text](Screenshots/Opdracht1/MariaDBenuser.png)
 
 
 4) Wordpress installeren
@@ -295,7 +295,7 @@ sudo systemctl reload apache2
 ```
 
 De website heeft een ping, en geeft een standaard website als response.
-![alt text](Screenshots\Opdracht1\WordpressPingEnCurl.png)
+![alt text](Screenshots/Opdracht1/WordpressPingEnCurl.png)
 
 #### Firewall instellen
 
@@ -491,13 +491,13 @@ echo "✅ Container $CTID klaar! Bezoek: http://${IP}/wordpress"
 
 ### Wordpress werkend in browser via tailscale
 
-![alt text](Screenshots\Opdracht1\CLIWorkingContainer.png)
+![alt text](Screenshots/Opdracht1/CLIWorkingContainer.png)
 
-![alt text](Screenshots\Opdracht1\ContainersTailgate.png)
+![alt text](Screenshots/Opdracht1/ContainersTailgate.png)
 
-![alt text](Screenshots\Opdracht1\Apacheonline.png)
+![alt text](Screenshots/Opdracht1/Apacheonline.png)
 
-![alt text](Screenshots\Opdracht1\Wordpressonline.png)
+![alt text](Screenshots/Opdracht1/Wordpressonline.png)
 
 ### 6 containers gemaakt voor de klant
 
@@ -513,7 +513,7 @@ Deze containers voldoen aan de gestelde eisen:
 | Poorten open     | 80 (HTTP), 443 (HTTPS)        |
 | Firewall         | Alleen toegang tot webdiensten|
 
-![alt text](Screenshots\Opdracht1\6ContainersWebsite.png)
+![alt text](Screenshots/Opdracht1/6ContainersWebsite.png)
 
 ### Monitoring
 
@@ -577,7 +577,7 @@ beheerder@pve01:~$
 
 Gelukt om te monitoren, hierbij de screenshot van wp135!
 
-![alt text](Screenshots\Opdracht1\monitorcontainer135.png)
+![alt text](Screenshots/Opdracht1/monitorcontainer135.png)
 
 ## Verantwoording Opdracht 1: Klant 2
 
@@ -677,7 +677,7 @@ sudo ha-manager add vm:200 --group wp-ha --state started
 
 Het lukte me niet goed met CLI, dus uitenidelijk met GUI opgelost.
 
-![alt text](Screenshots\Klant2\instellenHAgroep.png)
+![alt text](Screenshots/Klant2/instellenHAgroep.png)
 
 
 #### Stap 3: Start VM en log in met certificaat zonder wachtwoord
@@ -937,7 +937,7 @@ Screenshot van Tailgate en de VM `wpcrm`.
 En wordpress raadplegen met tailgate ip in browser.
 
 
-![alt text](Screenshots\Klant2\TailscaleWordpress.png)
+![alt text](Screenshots/Klant2/TailscaleWordpress.png)
 
 #### Installeer een CRM + wordpress via host
 ```bash
@@ -989,7 +989,7 @@ EOF
 Niet de mooiste site :)
 Maar hij werkt wel!
 
-![alt text](Screenshots\Klant2\WordpressCRM.png)
+![alt text](Screenshots/Klant2/WordpressCRM.png)
 
 #### Monitoring
 
@@ -1026,7 +1026,7 @@ sudo systemctl restart netdata
 
 De monitoring van de VM werkt op WPCRM!
 
-![alt text](Screenshots\Klant2\monitorNetStat.png)
+![alt text](Screenshots/Klant2/monitorNetStat.png)
 
 #### Failover test
 
@@ -1042,7 +1042,7 @@ sudo systemctl poweroff
 
 screenshot:
 
-![alt text](Screenshots\Opdracht1\MailServerAanzetten.png)
+![alt text](Screenshots/Opdracht1/MailServerAanzetten.png)
 
 De video van de HA is opgenomen in de video in de bijlage. *(te groot voor github)*
 
