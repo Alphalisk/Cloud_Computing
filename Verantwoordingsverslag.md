@@ -171,8 +171,8 @@ De container heeft volgens de beoordelingsmatrix de volgende eisen:
 | Poorten open     | 80 (HTTP), 443 (HTTPS)        |
 | Firewall         | Alleen toegang tot webdiensten|
 
-De gebruikte Bash code om dit aan te maken,
-Dit is gedaan vanuit control unit pve00 met ssh naar managed unit pve01:
+Hierbij de gebruikte Bash code om dit aan te maken,  
+dit is gedaan vanuit control unit pve00 met ssh naar managed unit pve01:
 
 ```bash
 root@pve00:~# ssh -p 6123 beheerder@pve01 'sudo pct create 101 local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst \
@@ -192,7 +192,7 @@ Screenshot:
 
 ### Stap 3: Firewall instellen
 
-Op de managed node stel ik de firewall voor container CT 101 in:
+Op de managed nodes is de firewall voor container CT 101 ingesteld:
 
 ![alt text](Screenshots/Opdracht1/FirewallInstellen.png)
 
@@ -210,7 +210,7 @@ root@wp1:/#
 
 ### Stap 5: Wordpress installeren
 
-Op de container moeten nu de applicatie Wordpress geinstalleerd worden.
+Op de container moet nu de applicatie Wordpress geinstalleerd worden.
 Daarbij kwam het probleem dat het niet mogelijk was om online te komen met sudo apt update.
 Er waren 2 fouten.
 De tailgate DNS 100.100.100.100 werd gebruikt -> die is omgezet naar 1.1.1.1
