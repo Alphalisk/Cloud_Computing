@@ -42,3 +42,4 @@ sudo a2ensite wordpress.conf
 sudo a2enmod rewrite
 sudo systemctl reload apache2
 EOF
+
