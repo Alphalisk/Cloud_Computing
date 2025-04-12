@@ -58,5 +58,3 @@ Nog te doen:
 - In script koppelen aan monitor
 - Script naar Ansible
 - video maken van uitrol
-- controleren van HA (cgroup?)
-- video maken van HA uitval
