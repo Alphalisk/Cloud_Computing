@@ -8,9 +8,10 @@ Inventaris:
   - modulaire scripts zijn korte scripts voor installatie specifieke onderdelen.
   - definitieve script zijn alle modulaire scripts samengevoegd tot een volledig werkend geheel. 
 - De map Playbooksbevat de .yml files voor managed en control nodes onderhoud.
-- Bijgeleverd zijn 2 video's buiten github:
+- Bijgeleverd zijn 3 video's buiten github:
   - Volledig_automatische_installatie_Container.mp4
   - Volledig_automatische_installatie_VM.mp4
+  - Failover_VM_Test_HA.mp4
 
 **Netwerkconfiguratie:**
 |nodenaam|IP intern    |Type node    |IP Tailscale  |
