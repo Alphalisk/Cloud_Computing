@@ -3,9 +3,14 @@ Repository voor opdrachten Cloud Computing.
 
 Inventaris:
 - Het verantwoordingsverslag voor de opdrachten wordt in het bestand *Verantwoordingsverslag.md* bijgehouden.
-- De map screenhots bevat bewijsvoering
+- De map Screenhots bevat bewijsvoering
 - De map Scripts bevat bash scripts
-- De map Playbooks bevat de .yml files
+  - modulaire scripts zijn korte scripts voor installatie specifieke onderdelen.
+  - definitieve script zijn alle modulaire scripts samengevoegd tot een volledig werkend geheel. 
+- De map Playbooksbevat de .yml files voor managed en control nodes onderhoud.
+- Bijgeleverd zijn 2 video's buiten github:
+  - Volledig_automatische_installatie_Container.mp4
+  - Volledig_automatische_installatie_VM.mp4
 
 **Netwerkconfiguratie:**
 |nodenaam|IP intern    |Type node    |IP Tailscale  |
@@ -17,44 +22,37 @@ Inventaris:
 ## Werkwijze aanmaken LXM container voor wordpress, klant 1
 
 Met de scripts van klant 1 kunnen de containers gemaakt worden.
-`Scripts\Klant1`
+`Scripts\Klant1\Definitieve script\Volledige_installatie_LXC.sh`
 
 1) Log in als root op control node (pve00)
    `ssh root@100.94.185.45` (tailgate)
 2) Log in op managed node als beheerder op pve01
    `ssh beheerder@10.24.13.101`
-3) trap script ./script/deploy_wordpress_lxc6.sh <xxx> af.
-   `./scripts/deploy_wordpress_lxc6.sh`  
-    *xxx = te creeeren container nummer. Nu is wordpress geinstalleerd en klaar voor gebruik*
-4) *Optionele stap* ivm tailscale: Zorg ervoor dat tailscale auth key in de volgende map staat; /tmp/tailscale.env
-    `echo 'TAILSCALE_AUTH_KEY=tskey-auth-.....' > /tmp/tailscale.env`
-5) *Optionele stap* ivm tailscale: trap ./script/create_tailgate_container.sh af, !vul de goede containernaam in.
-   `./scripts/create_tailgate_container.sh`
-   `<tailgate-ip>/wordpress weergeeft wordpress`  
-7) Doe dit zo vaak als de klant wil, eventueel met een for-loop.
+3) trap volledige uitrolscript af (github en node hebben exact dezelfde script):
+   - hier op Github: `Scripts\Klant1\Definitieve script\Volledige_installatie_LXC.sh xxx`
+   - op de node pve01 `.\scripts\definitief\deployLXC.sh xxx*`  
+    *xxx = te creeeren container nummer. Gebruik een uniek nieuw nummer!*
+4) Doe dit zo vaak als de klant wil, eventueel met een for-loop.
     6x doen met unieke CT namen *(vb 131 t/m 136)*
-8) Koppel aan netstat monitor met monitor.sh
-   `<tailgate-ip>:19999 weergeeft de monitor`
-
-Nog te doen:
-- In script koppelen aan monitor
-- Script beter maken
-- Script naar Ansible
-- video maken van uitrol
+5) Na uitvoering is de CT als volgt bereikbaar:
+   - `<tailgate-ip>` weergeeft apache
+   - `<tailgate-ip>/wordpress` weergeeft wordpress
+   - `<tailgate-ip>:19999` weergeeft de netdata monitor`
 
 ## Werkwijze aanmaken VM CRM HA, klant 2
 
 Met de scripts van klant 2 kan nu de VM gemaakt worden.
-`Scripts\Klant2`
+`Scripts\Klant2\Definitieve_Script\Volledige_installatieVM.sh`
 
 1) Log in als root op control node (pve00)
    `ssh root@100.94.185.45` (tailgate)
-2) Log in op managed node als beheerder op pve02
+2) Log in op managed node als beheerder op pve01 of pve02
    `ssh beheerder@10.24.13.102`
-3) scripts uit te werken
-
-Nog te doen:
-- scripten van VM aanmaken
-- In script koppelen aan monitor
-- Script naar Ansible
-- video maken van uitrol
+3) trap volledige uitrolscript af (github en node hebben exact dezelfde script):
+   - hier op Github: `Scripts\Klant1\Definitieve script\Volledige_installatie_VM.sh xxx`
+   - op de node pve01 `.\scripts\definitief\deployVM.sh xxx*`  
+    *xxx = te creeeren container nummer. Gebruik een uniek nieuw nummer!*
+4) Na uitvoering is de VM als volgt bereikbaar:
+   - `<tailgate-ip>` weergeeft apache
+   - `<tailgate-ip>/wordpress` weergeeft wordpress + CRM
+   - `<tailgate-ip>:19999` weergeeft de netdata monitor`

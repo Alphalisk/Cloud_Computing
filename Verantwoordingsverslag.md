@@ -573,6 +573,20 @@ Gelukt om te monitoren, hierbij de screenshot van wp135!
 
 ![alt text](Screenshots/Opdracht1/monitorcontainer135.png)
 
+### Automatische script voor het compleet opzetten van de container:
+
+
+
+In de volgende map heb ik de volledige script gezet voor het maken van de gevraagde VM klant 2 vanuit Bash.
+Inclusief: CT ,Ubuntu, tailscale connectie, monitoring netdata, wordpress, mariaDB, apache:
+
+`Scripts\Klant1\Definitieve script\Volledige_installatie_LXC.sh`
+
+Ook is er een video gemaakt die de volledige uitrol laat zien: `Volledig_automatische_installatie_LXC.mp4` 
+
+
+---
+
 ## Verantwoording Opdracht 1: Klant 2
 
 ### Gedane stappen in Bash:
@@ -1040,8 +1054,20 @@ screenshot:
 
 De video van de HA is opgenomen in de video in de bijlage. *(te groot voor github)*
 
+---
+
+### Automatische script voor het compleet opzetten van de VM:
+
+In de volgende map heb ik de volledige script gezet voor het maken van de gevraagde VM klant 2 vanuit Bash.
+Inclusief: VM, HA, ,Ubuntu, tailscale connectie, monitoring netdata, wordpress, mariaDB, apache en CRM:
+
+`Scripts\Klant2\Definitieve_Script\Volledige_installatieVM.sh`
+
+Ook is er een video gemaakt die de volledige uitrol laat zien: `Volledig_automatische_installatie_VM.mp4` 
+
+
 
 *Gemaakt door: Richard Mank*  
 *Studentnummer: 460389*  
-*Datum: 2-4-2025*
+*Datum: 12-4-2025*
 
