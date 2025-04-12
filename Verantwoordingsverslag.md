@@ -192,7 +192,7 @@ Screenshot:
 
 ### Stap 3: Firewall instellen
 
-Op de managed nodes is de firewall voor container CT 101 ingesteld:
+Op de managed node is de firewall voor container CT 101 ingesteld:
 
 ![alt text](Screenshots/Opdracht1/FirewallInstellen.png)
 
